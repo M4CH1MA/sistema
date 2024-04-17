@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from cliente import Ui_formCliente
 
 
 class Ui_MainWindow(object):
@@ -210,12 +211,20 @@ class Ui_MainWindow(object):
 
         #Botoes do sistema
         self.bt_sair.clicked.connect(self.sairSistema)
+        self.bt_cliente.clicked.connect(self.telaCliente)
+        self.actionCliente.triggered.connect(self.telaCliente)  #menu cliente
 
-        #Funcoes do sistea
+    #Funcoes do sistea
 
         #Sair
     def sairSistema(self):
         sys.exit()
+
+    def telaCliente(self):
+        self.formCliente = QtWidgets.QWidget()
+        self.ui = Ui_formCliente()
+        self.ui.setupUi(self.formCliente)
+        self.formCliente.show()
 
 
 #Imagens do sistema

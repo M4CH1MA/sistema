@@ -9,7 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+import mysql.connector
+import pandas
+from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QTableWidget, QTableWidgetItem
 
 class Ui_formCliente(object):
     def setupUi(self, formCliente):
@@ -90,13 +92,88 @@ class Ui_formCliente(object):
         item = self.tb_cliente.horizontalHeaderItem(3)
         item.setText(_translate("formCliente", "Cidade:"))
         self.lb_nomeCliente.setText(_translate("formCliente", "Nome Cliente:"))
-#import icon_adicionar_rc
-#import icon_alterar_rc
-#import icon_consultar_rc
-#import icon_excluir_rc
-#import icon_geral_rc
-#import icon_pesquisar_rc
-#import icon_retornar_rc
+
+        #Botoes do sistema
+        self.bt_retornar.clicked.connect(lambda: self.sairTela(formCliente))
+        self.bt_pesquisarGeral.clicked.connect(self.consultarGeral)
+        self.bt_pesquisar.clicked.connect(self.pesquisarCliente)
+
+    #Funcoes sistema
+    def sairTela(self, formCliente):
+        formCliente.close()
+
+
+    def consultarGeral(self):
+        #Conexao com o banco
+        mydb = mysql.connector.connect(
+            host = 'localhost',
+            user = 'root',
+            password = '',
+            database = 'finan'
+        )
+        mycursor = mydb.cursor()
+        mycursor.execute("SELECT * FROM cliente")
+        myresult = mycursor.fetchall()
+
+        #tabela
+        df = pandas.DataFrame(myresult, columns=['ID', 'Nome', 'Telefone', 'Cidade'])
+        self.all_data = df
+
+        #Carregar na tabela
+        numRows = len(self.all_data.index)
+        self.tb_cliente.setColumnCount(len(self.all_data.columns))
+        self.tb_cliente.setRowCount(numRows)
+        self.tb_cliente.setHorizontalHeaderLabels(self.all_data.columns)
+
+        for i in range(numRows):
+            for j in range(len(self.all_data.columns)):
+                self.tb_cliente.setItem(i, j, QTableWidgetItem(str(self.all_data.iat[i, j])))
+
+        self.tb_cliente.resizeColumnsToContents()
+        self.tb_cliente.resizeRowsToContents()
+
+        mycursor.close()
+
+    def pesquisarCliente(self):
+        mydb = mysql.connector.connect(
+            host = 'localhost',
+            user = 'root',
+            password = '',
+            database = 'finan'
+        )
+        mycursor = mydb.cursor()
+        nomeConsulta = self.txt_nomeCliente.text()
+        consultaSQL = "SELECT * FROM cliente WHERE nome like '" + nomeConsulta + "%'"
+        mycursor.execute(consultaSQL)
+        myresult = mycursor.fetchall()
+
+        #tabela
+        df = pandas.DataFrame(myresult, columns=['ID', 'Nome', 'Telefone', 'Cidade'])
+        self.all_data = df
+
+        #Carregar na tabela
+        numRows = len(self.all_data.index)
+        self.tb_cliente.setColumnCount(len(self.all_data.columns))
+        self.tb_cliente.setRowCount(numRows)
+        self.tb_cliente.setHorizontalHeaderLabels(self.all_data.columns)
+
+        for i in range(numRows):
+            for j in range(len(self.all_data.columns)):
+                self.tb_cliente.setItem(i, j, QTableWidgetItem(str(self.all_data.iat[i, j])))
+
+        self.tb_cliente.resizeColumnsToContents()
+        self.tb_cliente.resizeRowsToContents()
+
+        mycursor.close()
+
+
+import icon_adicionar
+import icon_alterar
+import icon_consultar
+import icon_excluir
+import icon_geral
+import icon_pesquisar
+import icon_retornar
 
 
 if __name__ == "__main__":
