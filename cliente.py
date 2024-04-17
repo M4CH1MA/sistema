@@ -9,9 +9,12 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QTableWidget, QTableWidgetItem
+from dadosCliente import Ui_formDadosCliente
 import mysql.connector
 import pandas
-from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QTableWidget, QTableWidgetItem
+import variaveisControle
+
 
 class Ui_formCliente(object):
     def setupUi(self, formCliente):
@@ -97,6 +100,7 @@ class Ui_formCliente(object):
         self.bt_retornar.clicked.connect(lambda: self.sairTela(formCliente))
         self.bt_pesquisarGeral.clicked.connect(self.consultarGeral)
         self.bt_pesquisar.clicked.connect(self.pesquisarCliente)
+        self.bt_adiocionar.clicked.connect(self.cadastrarCliente)
 
     #Funcoes sistema
     def sairTela(self, formCliente):
@@ -106,10 +110,10 @@ class Ui_formCliente(object):
     def consultarGeral(self):
         #Conexao com o banco
         mydb = mysql.connector.connect(
-            host = 'localhost',
-            user = 'root',
-            password = '',
-            database = 'finan'
+            host = variaveisControle.host,
+            user = variaveisControle.user,
+            password = variaveisControle.password,
+            database = variaveisControle.database
         )
         mycursor = mydb.cursor()
         mycursor.execute("SELECT * FROM cliente")
@@ -136,10 +140,10 @@ class Ui_formCliente(object):
 
     def pesquisarCliente(self):
         mydb = mysql.connector.connect(
-            host = 'localhost',
-            user = 'root',
-            password = '',
-            database = 'finan'
+            host = variaveisControle.host,
+            user = variaveisControle.user,
+            password = variaveisControle.password,
+            database = variaveisControle.database
         )
         mycursor = mydb.cursor()
         nomeConsulta = self.txt_nomeCliente.text()
@@ -165,6 +169,13 @@ class Ui_formCliente(object):
         self.tb_cliente.resizeRowsToContents()
 
         mycursor.close()
+
+
+    def cadastrarCliente(self):
+        self.formDadosCliente = QtWidgets.QWidget()
+        self.ui = Ui_formDadosCliente()
+        self.ui.setupUi(self.formDadosCliente)
+        self.formDadosCliente.show()
 
 
 import icon_adicionar

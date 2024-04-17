@@ -10,6 +10,10 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+import mysql.connector
+import pandas as pd
+import variaveisControle
+
 
 class Ui_formDadosCliente(object):
     def setupUi(self, formDadosCliente):
@@ -55,8 +59,43 @@ class Ui_formDadosCliente(object):
         self.lb_cidade.setText(_translate("formDadosCliente", "Cidade:"))
         self.bt_cancelar.setToolTip(_translate("formDadosCliente", "<html><head/><body><p><br/></p></body></html>"))
         self.bt_cadastrar.setToolTip(_translate("formDadosCliente", "<html><head/><body><p><br/></p></body></html>"))
-import icon_cadastrar_rc
-import icon_cancelar_rc
+
+        #botoes
+        self.bt_cancelar.clicked.connect(lambda: self.sairTela(formDadosCliente))
+        self.bt_cadastrar.clicked.connect(self.cadastrarCliente)
+
+    #Funcoes sistema
+
+    def sairTela(self, formDadosCliente):
+        formDadosCliente.close()
+
+
+    def cadastrarCliente(self):
+        nomeCliente = self.txt_nome.text()
+        telefoneCliente = self.txt_telefone.text()
+        cidadeCliente = self.txt_cidade.text()
+        
+        mydb = mysql.connector.connect(
+            host = variaveisControle.host,
+            user = variaveisControle.user,
+            password = variaveisControle.password,
+            database = variaveisControle.database
+        )
+        mycursor = mydb.cursor()
+        sql = "INSERT INTO cliente(nome, telefone, cidade) VALUES (%s, %s, %s)"
+        val = (nomeCliente, telefoneCliente, cidadeCliente)
+        mycursor.execute(sql, val)
+
+        mydb.commit()
+        mycursor.close()
+
+        #Limpando campos
+        self.txt_nome.setText("")
+        self.txt_telefone.setText("")
+        self.txt_cidade.setText("")
+
+import icon_cadastrar
+import icon_cancelar
 
 
 if __name__ == "__main__":
