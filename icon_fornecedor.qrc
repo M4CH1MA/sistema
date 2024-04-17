@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="icon_fornecedor">
+    <file>imagens/icons/fornecedor.png</file>
+  </qresource>
+</RCC>
